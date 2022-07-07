@@ -1,0 +1,71 @@
+#Trigger builds only on the master branch
+#Add additional options for more branches to target
+trigger:
+- master
+
+pr:
+- master
+
+#Create a unique name for the build based on your project requirements
+#BuildID is the unique ID for the build
+name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
+
+variables:
+  AgentImage: "windows-latest" #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+  isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+  JobName: "Stage-1"
+
+stages:
+- stage: 'Stage_1' #Stage name cannot have spaces
+  displayName: 'Stage_1' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Stage_1_Job' #Job name cannot have spaces
+    displayName: 'Stage_1_Job' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - powershell: echo $(JobName)
+- stage: 'Stage_2' #Stage name cannot have spaces
+  displayName: 'Stage_2' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Stage_2_Job' #Job name cannot have spaces
+    displayName: 'Stage_2_Job' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - powershell: echo 'Stage-2'
+- stage: 'Stage_3' #Stage name cannot have spaces
+  dependsOn: Stage_2
+  displayName: 'Stage_3' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Stage_3_Job' #Job name cannot have spaces
+    displayName: 'Stage_3_Job' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - powershell: echo 'Stage-3'
+- stage: 'Stage_4' #Stage name cannot have spaces
+  dependsOn: Stage_2
+  displayName: 'Stage_4' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Stage_4_Job' #Job name cannot have spaces
+    displayName: 'Stage_4_Job' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - powershell: echo 'Stage-4'
+- stage: 'Stage_5' #Stage name cannot have spaces
+  condition: and(succeeded('Stage_2'), eq(variables.isDev, 'true'))
+  displayName: 'Stage_5' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Stage_5_Job' #Job name cannot have spaces
+    displayName: 'Stage_5_Job' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - powershell: echo 'Stage-5'
+- stage: 'Stage_6' #Stage name cannot have spaces
+  displayName: 'Stage_6' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - deployment: DeploymentJob
+    environment: dev
