@@ -1,0 +1,36 @@
+#Trigger builds only on the master branch
+#Add additional options for more branches to target
+trigger:
+- master
+
+#Run build for all Pull Requests targetting master branch
+#Add additional options for more branches to target
+pr:
+- master
+
+#Create a unique name for the build based on your project requirements
+#BuildID is the unique ID for the build
+name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
+
+variables:
+  AgentImage: "windows-latest" #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+
+stages:
+- stage: 'Stage_1' #Stage name cannot have spaces
+  displayName: 'Stage_1' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Stage_1_Job' #Job name cannot have spaces
+    displayName: 'Stage_1_Job' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - powershell: echo 'Stage-1'
+- stage: 'Stage_2' #Stage name cannot have spaces
+  displayName: 'Stage_2' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Stage_2_Job' #Job name cannot have spaces
+    displayName: 'Stage_2_Job' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - powershell: echo 'Stage-2'
